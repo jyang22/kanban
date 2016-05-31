@@ -3,32 +3,36 @@ import alt from '../libs/alt';
 import NoteActions from '../actions/NoteActions';
 
 class NoteStore {
-    constructor() {
-        this.bindActions(NoteActions);
-        this.notes = [];
-    }
+  constructor() {
+    this.bindActions(NoteActions);
 
-    create(note) {
-        const notes = this.notes;
-        note.id = uuid.v4();
-        this.setState({
-            notes.concat(note)
-        });
-    }
+    this.notes = [];
+  }
+  create(note) {
+    const notes = this.notes;
 
-    update(updatedNote) {
-        const notes = this.notes.map(note => {
-            if (note.id == updatedNote.id) {
-                return Object.assign({}, note, updatedNote);
-            }
-            return note;
-        });
-        this.setState({notes});
-    }
+    note.id = uuid.v4();
 
-    delete(id) {
-        const notes = this.notes.filter(note => note.id != id);
-    }
+    this.setState({
+      notes: notes.concat(note)
+    });
+  }
+  update(updatedNote) {
+    const notes = this.notes.map(note => {
+      if(note.id === updatedNote.id) {
+        return Object.assign({}, note, updatedNote);
+      }
+
+      return note;
+    });
+
+    this.setState({notes});
+  }
+  delete(id) {
+    this.setState({
+      notes: this.notes.filter(note => note.id !== id)
+    });
+  }
 }
 
 export default alt.createStore(NoteStore, 'NoteStore');

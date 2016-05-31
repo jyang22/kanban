@@ -1,72 +1,40 @@
-import uuid from 'node-uuid';
+import AltContainer from 'alt-container';
 import React from 'react';
 import Notes from './Notes.jsx';
+import NoteActions from '../actions/NoteActions';
+import NoteStore from '../stores/NoteStore';
 
 export default class App extends React.Component {
-    constructor(porp) {
-        super(porp);
-        this.state = {
-            notes: [
-                {
-                    id: uuid.v4(),
-                    task: 'Learn Webpack'
-                },
-                {
-                    id: uuid.v4(),
-                    task: 'Learn React'
-                },
-                {
-                    id: uuid.v4(),
-                    task: 'Do laundry'
-                }
-            ]
-        };
+  render() {
+    return (
+      <div>
+        <button className="add-note" onClick={this.addNote}>+</button>
+        <AltContainer
+          stores={[NoteStore]}
+          inject={{
+            notes: () => NoteStore.getState().notes
+          }}
+        >
+          <Notes onEdit={this.editNote} onDelete={this.deleteNote} />
+        </AltContainer>
+      </div>
+    );
+  }
+  addNote() {
+    NoteActions.create({task: 'New task'});
+  }
+  editNote(id, task) {
+    // Don't modify if trying to set an empty value
+    if(!task.trim()) {
+      return;
     }
 
-    render() {
-        const notes = this.state.notes;
-        return (
-            <div>
-                <button onClick={this.addNote} className="add-note">+</button>
-                <Notes
-                    notes={notes}
-                    onEdit={this.editNote}
-                    onDelete={this.deleteNote}
-                />
-            </div>
-        )
-    }
+    NoteActions.update({id, task});
+  }
+  deleteNote(id, e) {
+    // Avoid bubbling to edit
+    e.stopPropagation();
 
-    addNote = () => {
-        this.setState({
-            notes: this.state.notes.concat([{
-                id: uuid.v4(),
-                task: 'New task'
-            }])
-        });
-    };
-
-    editNote = (id, task) => {
-        if(!task.trim()) {
-            return;
-        }
-
-        const notes = this.state.notes.map(note => {
-            if(note.id === id && task) {
-                note.task = task;
-            }
-            return note;
-        });
-
-        this.setState({notes});
-    };
-
-    deleteNote = (id, e) => {
-        // Avoid bubbling to edit
-        e.stopPropagation();
-
-        this.setState({
-            notes: this.state.notes.filter(note => note.id !== id)
-        });
-    };
+    NoteActions.delete(id);
+  }
 }
