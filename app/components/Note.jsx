@@ -22,7 +22,7 @@ export default class Note extends React.Component {
 
     render() {
         if (this.state.editing) {
-            return this.renderEdit;
+            return this.renderEdit();
         }
         return this.renderNote();
     }

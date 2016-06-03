@@ -20,9 +20,11 @@ export default class App extends React.Component {
       </div>
     );
   }
+
   addNote() {
     NoteActions.create({task: 'New task'});
   }
+
   editNote(id, task) {
     // Don't modify if trying to set an empty value
     if(!task.trim()) {
@@ -31,6 +33,7 @@ export default class App extends React.Component {
 
     NoteActions.update({id, task});
   }
+  
   deleteNote(id, e) {
     // Avoid bubbling to edit
     e.stopPropagation();
